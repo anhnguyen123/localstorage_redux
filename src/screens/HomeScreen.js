@@ -1,4 +1,4 @@
-import {} from '../redux/actions';
+import { } from '../redux/actions';
 
 import {
   Dimensions,
@@ -9,19 +9,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {Component, useEffect, useState} from 'react';
-import {addToWishList, fetchMovies, removeFromWishList} from '../redux/actions';
+import React, { Component, useEffect, useState } from 'react';
+import { addToWishList, fetchMovies, removeFromWishList } from '../redux/actions';
 
-import {BASE_URL} from '../utilities';
-import {FlatList} from 'react-native-gesture-handler';
-import {connect} from 'react-redux';
-import {store} from '../redux/store';
+import { BASE_URL } from '../utilities';
+import { FlatList } from 'react-native-gesture-handler';
+import { connect } from 'react-redux';
+import { store } from '../redux/store';
 
 // import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const _HomeScreen = (props) => {
-  const {movieReducer, fetchMovies, addToWishList, removeFromWishList} = props;
-  const {movies, wishlist} = movieReducer;
+  const { movieReducer, fetchMovies, addToWishList, removeFromWishList } = props;
+  const { movies, wishlist } = movieReducer;
   const [currentMovie, setCurrentMovie] = useState(undefined);
 
   useEffect(() => {
@@ -30,15 +30,33 @@ const _HomeScreen = (props) => {
 
   useEffect(() => {
     if (movies.length > 0) {
-      console.log(JSON.stringify(movies[0]));
+    //  console.log(JSON.stringify(movies[0]));
       setCurrentMovie(movies[0]);
     }
   }, [movies]);
+
+  const didTabCurrentMovie = (movie) => {
+    setCurrentMovie(movie)
+  }
+  const onTabAddToWishlist = (movie) => {
+    addToWishList(movie);
+  }
+  const onTabRemoveFromWishlish = (movie) => {
+    removeFromWishList(movie);
+  }
+  const isExist = (movie) => {
+    if (wishlist.filter(item => item._id === movie._id).length > 0) {
+      return true;
+    }
+    return false;
+  }
+  console.log('render');
   return (
+    
     <View style={styles.container}>
       {/* poster and info */}
       <View style={styles.posterView}>
-        <View style={{flex: 9}}>
+        <View style={{ flex: 9 }}>
           {currentMovie !== undefined && (
             <ImageBackground
               resizeMode="stretch"
@@ -53,7 +71,7 @@ const _HomeScreen = (props) => {
           )}
         </View>
         {currentMovie !== undefined && (
-          <View style={{flex: 3, alignItems: 'flex-end'}}>
+          <View style={{ flex: 3, alignItems: 'flex-end' }}>
             <TouchableOpacity
               style={{
                 position: 'absolute',
@@ -68,13 +86,13 @@ const _HomeScreen = (props) => {
                 borderBottomLeftRadius: 25,
                 borderTopLeftRadius: 25,
               }}>
-              <Text style={{fontSize: 22, fontWeight: '400', color: '#fff'}}>
+              <Text style={{ fontSize: 22, fontWeight: '400', color: '#fff' }}>
                 Watch Now
               </Text>
             </TouchableOpacity>
 
             {/* movie plot info */}
-            <View style={{flexDirection: 'column', padding: 20}}>
+            <View style={{ flexDirection: 'column', padding: 20 }}>
               <Text
                 style={{
                   textAlign: 'left',
@@ -85,7 +103,7 @@ const _HomeScreen = (props) => {
                 }}>
                 {currentMovie.title}
               </Text>
-              <Text style={{color: '#1d1d1d', fontSize: 13}}>
+              <Text style={{ color: '#1d1d1d', fontSize: 13 }}>
                 {currentMovie.plot}
               </Text>
             </View>
@@ -102,7 +120,7 @@ const _HomeScreen = (props) => {
             marginLeft: 20,
             marginBottom: 20,
           }}>
-          Top Movies
+        {console.log('render top movie')}  Top Movies
         </Text>
         <FlatList
           keyExtractor={(item, index) => index.toString()}
@@ -110,11 +128,13 @@ const _HomeScreen = (props) => {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           data={movies}
-          renderItem={({item, index}) => {
+          renderItem={({ item, index }) => {
             return (
               <View style={styles.movieCard}>
                 <TouchableOpacity
-                  style={{flex: 1, justifyContent: 'space-between'}}>
+                  style={{ flex: 1, justifyContent: 'space-between' }} onPress={() => {
+                    didTabCurrentMovie(item)
+                  }} >
                   <Image
                     resizeMode="stretch"
                     style={{
@@ -128,12 +148,34 @@ const _HomeScreen = (props) => {
                     }}
                   />
                 </TouchableOpacity>
-                <Text style={{textAlign: 'center', padding: 20}}>
+                <Text style={{ textAlign: 'center', padding: 15 }}>
                   {item.title}
                 </Text>
-                <TouchableOpacity>
-                  <Text>Add to Wishlist</Text>
-                </TouchableOpacity>
+                {isExist(item) ? <TouchableOpacity style={{
+                  backgroundColor: '#20b103',
+                  width: '100%',
+                  height: '20%',
+                  borderBottomLeftRadius: 20,
+                  borderBottomRightRadius: 20,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+                  onPress={() => onTabRemoveFromWishlish(item)}
+                >
+                  <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>Remove from Wishlist</Text>
+                </TouchableOpacity> : <TouchableOpacity style={{
+                  backgroundColor: '#d92f24',
+                  width: '100%',
+                  height: '20%',
+                  borderBottomLeftRadius: 20,
+                  borderBottomRightRadius: 20,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}
+                  onPress={() => onTabAddToWishlist(item)}>
+                    <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>Add to Wishlist</Text>
+                  </TouchableOpacity>}
+
               </View>
             );
           }}

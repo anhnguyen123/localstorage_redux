@@ -21,7 +21,7 @@ export default function (state = initialState, action) {
       return {
         ...state,
         wishlist: state.wishlist.filter(
-          (movie) => movie.id !== action.payload._id,
+          (movie) => movie._id !== action.payload._id,
         ),
       };
     default:
